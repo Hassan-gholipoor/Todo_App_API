@@ -36,6 +36,7 @@ class ModelTests(TestCase):
 
         self.assertEqual(user.email, payload['email'])
         self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
 
         
 
