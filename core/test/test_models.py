@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
+from core import models
 
 class ModelTests(TestCase):
 
@@ -37,6 +38,16 @@ class ModelTests(TestCase):
         self.assertEqual(user.email, payload['email'])
         self.assertTrue(user.is_staff)
         self.assertTrue(user.is_superuser)
+    
+    def test_todo_str_representaion(self):
+        payload = {
+            'email': 'test@email.com',
+            'password': 'pasworddtest',
+        }
+        user = get_user_model().objects.create_superuser(**payload)
+        todo = models.Todo.objects.create(title='gym', owner=user)
+
+        self.assertEqual(todo.title, 'gym')
 
         
 
