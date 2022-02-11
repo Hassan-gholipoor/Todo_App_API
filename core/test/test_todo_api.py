@@ -87,5 +87,21 @@ class PrivateTodoAPITests(TestCase):
         todo.refresh_from_db()
         self.assertEqual(todo.title, payload['title'])
 
+    def test_filter_todos_by_title(self):
+        t1 = Todo.objects.create(title='game', owner=self.user)
+        t2 = Todo.objects.create(title='gym', owner=self.user)
+        t3 = Todo.objects.create(title='work', owner=self.user)
+
+        res = self.client.get(TODO_URL,{'titles': f'{t1.title},{t2.title}'})
+        serializer1 = serializers.TodoSerializer(t1)
+        serializer2 = serializers.TodoSerializer(t2)
+        serializer3 = serializers.TodoSerializer(t3)
+
+        self.assertIn(serializer1.data, res.data)
+        self.assertIn(serializer2.data, res.data)
+        self.assertNotIn(serializer3.data, res.data)
+
+
+
 
 

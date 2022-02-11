@@ -11,9 +11,18 @@ class TodoApiViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     queryset = Todo.objects.all()
+
+    def _params_to_str(self, qs):
+        return [str(title) for title in qs.split(',')]
     
     def get_queryset(self):
-        return self.queryset.filter(owner=self.request.user).order_by('-title')
+        titles = self.request.query_params.get('titles')
+        queryset = self.queryset
+        if titles:
+            title_to_str = self._params_to_str(titles)
+            queryset = queryset.filter(title__in=title_to_str).order_by('-title')
+
+        return queryset.filter(owner=self.request.user).order_by('-title')
 
     def get_serializer_class(self, *args, **kwargs):
         if self.action == 'retrieve':
